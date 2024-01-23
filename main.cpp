@@ -3,7 +3,6 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL2_gfx.h>
-#include "C:\function\balls\main.cpp"
 #include "C:\function\location\main.cpp"
 #include <cmath>
 using namespace std ;
@@ -74,7 +73,20 @@ int main( int argc, char * argv[] ) {
     //********************************
     // نقاط اصلی صفحه
     //load the image
-        ball_red(m_renderer,10,20,30);
+    SDL_Surface* imageSurface = IMG_Load("C:\\Users\\Autamn\\Downloads\\red.png");
+    if (imageSurface == nullptr) {
+        std::cerr << "IMG_Load Error: " << IMG_GetError() << std::endl;
+        SDL_DestroyRenderer(m_renderer);
+        SDL_DestroyWindow(m_window);
+        SDL_Quit();
+        return 1;
+    }
+
+    // Create a texture from the image
+    SDL_Texture* imageTexture = SDL_CreateTextureFromSurface(m_renderer, imageSurface);
+    if (imageTexture == nullptr) {
+        std::cerr << "SDL_CreateTextureFromSurface Error: " << SDL_GetError() << std::endl;
+        SDL_FreeSurface(imageSurface);
         SDL_DestroyRenderer(m_renderer);
         SDL_DestroyWindow(m_window);
         SDL_Quit();
