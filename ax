@@ -17,3 +17,6 @@ for (int i = 1; i <= 21; ++i) {
     SDL_Rect destinationRect = {x-42, y, 88,85}; // Define the destination rectangle
     SDL_RenderCopy(renderer, image, NULL, &destinationRect); // Render the image at the specified coordinates and dimensions
 //*********************************** نمایش دادن
+SDL_SetRenderDrawColor(m_renderer, 72, 191, 238, 255); // تنظیم رنگ مشکی بکگراند
+SDL_RenderClear(m_renderer); // پاک کردن صفحه
+//*******************************دستور بک گراند
