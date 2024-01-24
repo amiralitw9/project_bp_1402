@@ -1,0 +1,19 @@
+// Define a pair of SDL_Texture* and image path for each image
+typedef std::pair<SDL_Texture*, std::string> ImagePair;
+
+// Create a vector to store the image pairs
+std::vector<ImagePair> images;//اسم وکتور و تعریف
+//*************************************** تعریف وکتور
+for (int i = 1; i <= 21; ++i) {
+            std::string imagePath = "C:/function/pic_balls/" + std::to_string(i) + ".png";
+            SDL_Surface* imageSurface = IMG_Load(imagePath.c_str());
+            SDL_Texture* texture = SDL_CreateTextureFromSurface(m_renderer, imageSurface);
+            SDL_FreeSurface(imageSurface);
+            images.push_back(std::make_pair(texture, imagePath));
+        }
+//*********************************** شماره های عکس رو به ترتیب بنویس
+    int x = x_center ; int y = y_center ; int width_1=width ;
+    SDL_Texture* image = images[1].first; // Get the image from the vector based on its index
+    SDL_Rect destinationRect = {x-42, y, 88,85}; // Define the destination rectangle
+    SDL_RenderCopy(renderer, image, NULL, &destinationRect); // Render the image at the specified coordinates and dimensions
+//*********************************** نمایش دادن
