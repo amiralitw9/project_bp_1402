@@ -7,10 +7,14 @@
 #include <cmath>
 using namespace std ;
 
-using namespace std;
+struct division_of_the_page
+        {
+            int x[3];//تقسیم بندی طول صفحه
+            int y[12]; //تقسیم بندی عرض صفحه
+        };
 int main( int argc, char * argv[] ) {
     Uint32 SDL_flags = SDL_INIT_VIDEO | SDL_INIT_TIMER;
-    Uint32 WND_flags = SDL_WINDOW_SHOWN;// SDL_WINDOW_FULLSCREEN_DESKTOP ;//SDL_WINDOW_BORDERLESS ;// SDL_WINDOW_FULLSCREEN_DESKTOP ; ;
+    Uint32 WND_flags = SDL_WINDOW_SHOWN;//SDL_WINDOW_FULLSCREEN_DESKTOP ;//SDL_WINDOW_BORDERLESS ;// SDL_WINDOW_FULLSCREEN_DESKTOP ; ;
     SDL_Window *m_window;
     SDL_Renderer *m_renderer;
     SDL_Texture *bkImg = NULL;
@@ -36,107 +40,137 @@ int main( int argc, char * argv[] ) {
     double ghotr_dayere = .08 * width;
     double fasele_do_dayere = .075 * width;
     //***********************************************************************
-    double x[2][10] = {{adad_sabet_x + ghotr_dayere,               adad_sabet_x + 2 * ghotr_dayere,
-                               adad_sabet_x + 3 * ghotr_dayere,               adad_sabet_x + 4 * ghotr_dayere,
-                                                                                           adad_sabet_x +
-                                                                                           5 * ghotr_dayere,
-                                                                                                        adad_sabet_x +
-                                                                                                        6 *
-                                                                                                        ghotr_dayere,
-                               adad_sabet_x + 7 * ghotr_dayere,               adad_sabet_x + 8 * ghotr_dayere,
-                                                                                           adad_sabet_x +
-                                                                                           9 * ghotr_dayere,
-                                                                                                        adad_sabet_x +
-                                                                                                        10 *
-                                                                                                        ghotr_dayere},
-                       {adad_sabet_x + ghotr_dayere - width * .04, adad_sabet_x + 2 * ghotr_dayere - width * .04,
-                               adad_sabet_x + 3 * ghotr_dayere - width * .04, adad_sabet_x + 4 * ghotr_dayere -
-                                                                              width * .04, adad_sabet_x +
-                                                                                           5 * ghotr_dayere -
-                                                                                           width * .04, adad_sabet_x +
-                                                                                                        6 *
-                                                                                                        ghotr_dayere -
-                                                                                                        width * .04,
-                               adad_sabet_x + 7 * ghotr_dayere - width * .04, adad_sabet_x + 8 * ghotr_dayere -
-                                                                              width * .04, adad_sabet_x +
-                                                                                           9 * ghotr_dayere -
-                                                                                           width * .04, adad_sabet_x +
-                                                                                                        10 *
-                                                                                                        ghotr_dayere -
-                                                                                                        width * .04}};
-    double y[13] = {(.04 * width - 2 * fasele_do_dayere), (.04 * width - fasele_do_dayere), (.04 * width),
-                    .04 * width + fasele_do_dayere, .04 * width + 2 * fasele_do_dayere,
-                    .04 * width + 3 * fasele_do_dayere, .04 * width + 4 * fasele_do_dayere,
-                    .04 * width + 5 * fasele_do_dayere, .04 * width + 6 * fasele_do_dayere,
-                    .04 * width + 7 * fasele_do_dayere, .04 * width + 8 * fasele_do_dayere,
-                    .04 * width + 9 * fasele_do_dayere, .04 * width + 10 * fasele_do_dayere};
-    //********************************
-    // نقاط اصلی صفحه
-    //load the image
-    SDL_Surface* imageSurface = IMG_Load("C:\\Users\\Autamn\\Downloads\\red.png");
-    if (imageSurface == nullptr) {
-        std::cerr << "IMG_Load Error: " << IMG_GetError() << std::endl;
-        SDL_DestroyRenderer(m_renderer);
-        SDL_DestroyWindow(m_window);
-        SDL_Quit();
-        return 1;
-    }
 
-    // Create a texture from the image
-    SDL_Texture* imageTexture = SDL_CreateTextureFromSurface(m_renderer, imageSurface);
-    if (imageTexture == nullptr) {
-        std::cerr << "SDL_CreateTextureFromSurface Error: " << SDL_GetError() << std::endl;
+    // Define a pair of SDL_Texture* and image path for each image
+    typedef std::pair<SDL_Texture *, std::string> ImagePair;
+
+// Create a vector to store the image pairs
+    std::vector<ImagePair> tasavir;//اسم وکتور و تعریف
+//*************************************** تعریف وکتور
+    std::string imagePath = "C:/function/menu_pictures/1.jpg";//عکس پس زمینه اینجا آپلود میشه
+    SDL_Surface *imageSurface = IMG_Load(imagePath.c_str());
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(m_renderer, imageSurface);
+    SDL_FreeSurface(imageSurface);
+    tasavir.push_back(std::make_pair(texture, imagePath));
+    for (int i = 2; i <= 7; ++i) {
+        std::string imagePath = "C:/function/menu_pictures/" + std::to_string(i) + ".png";//عکس های منو داخل وکتور هم آپلود میشه.
+        SDL_Surface *imageSurface = IMG_Load(imagePath.c_str());
+        SDL_Texture *texture = SDL_CreateTextureFromSurface(m_renderer, imageSurface);
         SDL_FreeSurface(imageSurface);
-        SDL_DestroyRenderer(m_renderer);
-        SDL_DestroyWindow(m_window);
-        SDL_Quit();
-        return 1;
+        tasavir.push_back(std::make_pair(texture, imagePath));
     }
-
-    // Main event loop
+    //*************************************************************************************
     bool isRunning = true;
     SDL_Event event;
+
+    division_of_the_page p ; //فراخوانی استراکت تقسیم بندی طولی و عرضی صفحه تحت عنوان p
+    for (int i = 0 ; i < 12  ; i ++)
+    {
+        p.y[i] = (height / 12 * i) - 50;//اینجا اعضای آرایه طول یا قد صفحه مقدار دهی میشن.
+    }
+    for (int j = 0 ; j < 3 ; j ++)
+    {
+        p.x[j] = width / 3 * j;//اینجا اعضای آرایه عرض یا پهنای صفحه مقدار دهی میشن.
+    }
+    SDL_Texture *image = tasavir[0].first; // تصویر را از وکتور حاوی تصاویر بر اساس شاخص و اصطلاحا index  اون دریافت میکنه //تصویر پس زمینه
+    SDL_Rect destinationRect = { 0, 0, width , height}; // اینجا تصویر پس زمینه شروع بازی تعریف و قرار میگیره
+    SDL_RenderCopy(m_renderer, image, NULL,
+                   &destinationRect); // تصویر در مختصات و ابعاد مشخص شده رندر میشه
+    SDL_RenderPresent(m_renderer);
+    SDL_Delay(2000);
     while (isRunning) {
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                isRunning = false;
-            } else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) {
-                isRunning = false;
+        if (SDL_PollEvent(&event)) {
+            switch (event.type) {
+                case SDL_QUIT:
+                    isRunning = false;
+                    break;
+                case SDL_MOUSEBUTTONDOWN://اینجا مختصات مکانی که موس کلیک میشه گرفته میشه و داخل متغیر های mouse_X و mouse_Y ذخیره میشه
+                    int mouse_X, mouse_Y;
+                    SDL_GetMouseState(&mouse_X, &mouse_Y);
+                    break;
             }
 
-        }SDL_SetRenderDrawColor(m_renderer, 0, 0, 210, 255); // تنظیم رنگ مشکی بکگراند
-        SDL_RenderClear(m_renderer); // پاک کردن صفحه
+        }
+
+
+        SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
+        SDL_RenderClear(m_renderer);
+        SDL_Texture *image = tasavir[0].first; // تصویر را از وکتور حاوی تصاویر بر اساس شاخص و اصطلاحا index  اون دریافت میکنه //تصویر پس زمینه
+        SDL_Rect destinationRect = { 0, 0, width , height}; // اینجا تصویر پس زمینه شروع بازی تعریف و قرار میگیره
+        SDL_RenderCopy(m_renderer, image, NULL,
+                       &destinationRect); // تصویر  در مختصات و ابعاد مشخص شده رندر میشه
+         image = tasavir[1].first; // تصویر را از وکتور حاوی تصاویر بر اساس شاخص و اصطلاحا index  اون دریافت میکنه  //تصویر شروع بازی
+         destinationRect = { p.x[1], p.y[2]   , width / 3 , height / 9}; //مکان و مختصات دکمه و مستطیل جدید تعریف میشه
+        SDL_RenderCopy(m_renderer, image, NULL,
+                       &destinationRect); // تصویر  در مختصات و ابعاد مشخص شده رندر میشه
+        image = tasavir[2].first; // تصویر را از وکتور حاوی تصاویر بر اساس شاخص و اصطلاحا index  اون دریافت میکنه  //تصویر مود های بازی
+        destinationRect = { p.x[1], p.y[4] , width / 3 , height / 9}; // مکان و مختصات دکمه و مستطیل جدید تعریف میشه
+        SDL_RenderCopy(m_renderer, image, NULL,
+                       &destinationRect); // تصویر  در مختصات و ابعاد مشخص شده رندر میشه
+        image = tasavir[3].first; // تصویر را از وکتور حاوی تصاویر بر اساس شاخص و اصطلاحا index  اون دریافت میکنه   //تصویر جدول امتیازات
+        destinationRect = { p.x[1], p.y[6], width / 3 , height / 9}; //مکان و مختصات دکمه و مستطیل جدید تعریف میشه
+        SDL_RenderCopy(m_renderer, image, NULL,
+                       &destinationRect); // Render the image at the specified coordinates and dimensions
+        image = tasavir[4].first; // Get the image from the vector based on its index //تصویر تم های بازی
+        destinationRect = { p.x[1], p.y[8], width / 3 , height / 9}; // Define the destination rectangle
+        SDL_RenderCopy(m_renderer, image, NULL,
+                       &destinationRect); // Render the image at the specified coordinates and dimensions
+        image = tasavir[5].first; // Get the image from the vector based on its index //تصویر سازندگان بازی
+        destinationRect = { p.x[1], p.y[10], width / 3 , height / 9}; // Define the destination rectangle
+        SDL_RenderCopy(m_renderer, image, NULL,
+                       &destinationRect); // Render the image at the specified coordinates and dimensions
+        image = tasavir[6].first; // Get the image from the vector based on its index //تصویر تنظیمات بازی
+        destinationRect = { p.x[0], p.y[11], 80, 80}; // Define the destination rectangle
+        SDL_RenderCopy(m_renderer, image, NULL,
+                       &destinationRect); // Render the image at the specified coordinates and dimensions
+                       SDL_RenderPresent(m_renderer);
+        //SDL_Delay(2000);
+        bool isRunning = true;
+        SDL_Event event;
+
+        while (isRunning) {
+            if (SDL_PollEvent(&event)) {
+                switch (event.type) {
+                    case SDL_QUIT:
+                        isRunning = false;
+                        break;
+                    case SDL_MOUSEBUTTONDOWN:
+                        int mouseX, mouseY;
+                        SDL_GetMouseState(&mouseX, &mouseY);
+
+
+                        // Check if the mouse click is within a specific area
+                        if (mouseX >= p.x[1] && mouseX <= p.x[1] + (width / 3) && mouseY >= p.y[2] && mouseY <= p.y[2] + (height / 9)) {
+
+                        }//تصویر استارت بازی
+                        if (mouseX >= p.x[1] && mouseX <= p.x[1] + (width / 3) && mouseY >= p.y[4] && mouseY <= p.y[4] + (height / 9)) {
+
+                        }//تصویر مود های بازی
+                        if (mouseX >= p.x[1] && mouseX <= p.x[1] + (width / 3) && mouseY >= p.y[6] && mouseY <= p.y[6] + (height / 9)) {
+
+                        }//تصویر جدول امتیازات
+                        if (mouseX >= p.x[1] && mouseX <= p.x[1] + (width / 3) && mouseY >= p.y[8] && mouseY <= p.y[8] + (height / 9)) {
+
+                        }//تصویر تم های بازی
+                        if (mouseX >= p.x[1] && mouseX <= p.x[1] + (width / 3) && mouseY >= p.y[10] && mouseY <= p.y[10] + (height / 9)) {
+
+                        }//تصویر سازندگان بازی
+                        if ( pow((mouseX - (p.x[0] + 80 / 2)) , 2) +  pow ((mouseY - (p.y[11] + 80 / 2)) , 2) <= 1600){
+
+                        }//تصویر تنظیمات
+                        break;
+                }
+            }
+
+
+            SDL_RenderPresent(m_renderer);
+        }
 
 
 
-
-        // Set the destination rectangle for rendering
-        SDL_Rect destRect;
-        destRect.x = 300;// X position of the destination rectangle
-        destRect.y = 300; // Y position of the destination rectangle
-        destRect.w = 80; // Width of the destination rectangle
-        destRect.h = 80; // Height of the destination rectangle
-
-        // Copy the texture to the renderer with the destination rectangle
-        SDL_RenderCopy(m_renderer, imageTexture, NULL, &destRect);
-
-        // Render the changes
-
-
-
-        SDL_RenderPresent(m_renderer);
     }
 
-    // Clean up
-    SDL_DestroyTexture(imageTexture);
-    SDL_FreeSurface(imageSurface);
-    SDL_DestroyRenderer(m_renderer);
-    SDL_DestroyWindow(m_window);
-    SDL_Quit();
+
 
 
 }
-
-
-
-
